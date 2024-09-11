@@ -46,3 +46,5 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- vim: ts=2 sts=2 sw=2 et
+-- save with q
+vim.keymap.set('n', 'q', ':wa<CR>', { desc = 'Save' })
