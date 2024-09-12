@@ -9,4 +9,5 @@ return {
   cmd = 'Copilot',
   event = 'InsertEnter',
   lazy = true,
+  enable = false,
 }
