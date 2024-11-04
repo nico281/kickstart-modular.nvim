@@ -48,7 +48,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 -- vim: ts=2 sts=2 sw=2 et
 
 -- save with q
-vim.keymap.set('n', 'q', ':wa<CR>', { desc = 'Save' })
+vim.keymap.set('n', 'q', ':wa<CR>:TSToolsOrganize<CR>', { desc = 'Save' })
 
 --find and replace
 vim.keymap.set('n', '<leader>gf', ':GrugFar<CR>', { desc = '[G]rug[F]ar find and replace' })
