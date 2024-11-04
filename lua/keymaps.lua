@@ -47,8 +47,23 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 -- vim: ts=2 sts=2 sw=2 et
 
+local function saveAndOrganizeTypeScript()
+  local filetype = vim.bo.filetype
+  -- Check if the filetype is 'typescript' or 'typescriptreact'
+  if filetype == 'typescript' or filetype == 'typescriptreact' or filetype == 'javascript' or filetype == 'javascriptreact' then
+    vim.cmd ':TSToolsOrganize'
+  end
+end
+
+-- Create a custom autocommand group to manage TypeScript-specific mappings
+local ts_group = vim.api.nvim_create_augroup('TypeScriptBindings', { clear = true })
+
+-- Autocommand to set 'q' key mapping for all files
+vim.keymap.set('n', 'q', function()
+  vim.cmd ':wa' -- Write all buffers
+  saveAndOrganizeTypeScript() -- Organize imports if TypeScript
+end, { desc = 'Save and optionally organize imports for TypeScript' })
 -- save with q
-vim.keymap.set('n', 'q', ':wa<CR>:TSToolsOrganize<CR>', { desc = 'Save' })
 
 --find and replace
 vim.keymap.set('n', '<leader>gf', ':GrugFar<CR>', { desc = '[G]rug[F]ar find and replace' })
