@@ -55,15 +55,11 @@ local function saveAndOrganizeTypeScript()
   end
 end
 
--- Create a custom autocommand group to manage TypeScript-specific mappings
-local ts_group = vim.api.nvim_create_augroup('TypeScriptBindings', { clear = true })
-
--- Autocommand to set 'q' key mapping for all files
-vim.keymap.set('n', 'q', function()
+vim.keymap.set('n', '<leader>oi', function()
   vim.cmd ':wa' -- Write all buffers
   saveAndOrganizeTypeScript() -- Organize imports if TypeScript
 end, { desc = 'Save and optionally organize imports for TypeScript' })
 -- save with q
-
+vim.keymap.set('n', 'q', ':wa<CR>', { desc = 'Save' })
 --find and replace
 vim.keymap.set('n', '<leader>gf', ':GrugFar<CR>', { desc = '[G]rug[F]ar find and replace' })
