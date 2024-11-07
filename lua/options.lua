@@ -66,4 +66,10 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+if vim.g.neovide then
+  vim.o.guifont = 'Maple Mono NF:h14'
+  vim.opt.linespace = 8
+  vim.g.neovide_refresh_rate = 120
+end
+
 -- vim: ts=2 sts=2 sw=2 et
