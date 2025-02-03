@@ -49,6 +49,7 @@ vim.opt.splitbelow = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
+vim.opt.relativenumber = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -65,6 +66,11 @@ vim.opt.cursorline = true
 -- Minimal number of screen lines to keep above and below the cursor.
 vim.opt.scrolloff = 10
 
+if vim.g.neovide then
+  vim.o.guifont = 'PlemolJP Console NF:h15'
+  vim.opt.linespace = 8
+  vim.g.neovide_refresh_rate = 120
+end
 -- if performing an operation that would fail due to unsaved changes in the buffer (like `:q`),
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
