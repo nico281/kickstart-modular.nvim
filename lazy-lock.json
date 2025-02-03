@@ -7,10 +7,6 @@
     "branch": "main",
     "commit": "e3b7cb4a1094377c3093a021300de123d9fc60d3"
   },
-  "bamboo.nvim": {
-    "branch": "master",
-    "commit": "0a94f81705733951be286493b8d1876d0e3d990f"
-  },
   "catppuccin": {
     "branch": "main",
     "commit": "4965db2d6155c25db4e8417465fc2703fdf4c2b7"
@@ -206,10 +202,6 @@
   "typescript-tools.nvim": {
     "branch": "master",
     "commit": "35e397ce467bedbbbb5bfcd0aa79727b59a08d4a"
-  },
-  "vague.nvim": {
-    "branch": "main",
-    "commit": "aa744dbf7bfc768da3dd232ccde3b337182903dc"
   },
   "vim-matchup": {
     "branch": "master",
