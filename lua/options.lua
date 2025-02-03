@@ -49,6 +49,7 @@ vim.opt.splitbelow = true
 vim.opt.tabstop = 2
 vim.opt.shiftwidth = 2
 vim.opt.expandtab = true
+vim.opt.relativenumber = true
 
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
@@ -66,7 +67,7 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 if vim.g.neovide then
-  vim.o.guifont = 'Maple Mono NF:h14'
+  vim.o.guifont = 'PlemolJP Console NF:h15'
   vim.opt.linespace = 8
   vim.g.neovide_refresh_rate = 120
 end
