@@ -15,6 +15,10 @@ return {
   },
   opts = {
     filesystem = {
+      follor_current_file = {
+        enabled = true,
+        leave_dirs_open = false,
+      },
       window = {
         mappings = {
           ['\\'] = 'close_window',
