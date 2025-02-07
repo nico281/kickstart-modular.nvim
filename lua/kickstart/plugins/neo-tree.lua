@@ -15,14 +15,13 @@ return {
   },
   opts = {
     filesystem = {
-      follor_current_file = {
-        enabled = true,
-        leave_dirs_open = false,
-      },
-      window = {
-        mappings = {
-          ['\\'] = 'close_window',
-        },
+      follow_current_file = true,
+      hijack_netrw_behavior = 'open_current',
+      use_libuv_file_watcher = false,
+    },
+    window = {
+      mappings = {
+        ['\\'] = 'close_window',
       },
     },
   },
