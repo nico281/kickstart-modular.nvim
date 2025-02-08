@@ -67,7 +67,7 @@ vim.opt.cursorline = true
 vim.opt.scrolloff = 10
 
 if vim.g.neovide then
-  vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h28'
+  vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h26'
   vim.opt.linespace = 8
   vim.g.neovide_refresh_rate = 120
 end
