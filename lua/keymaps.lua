@@ -69,3 +69,16 @@ end, { desc = 'Save and optionally organize imports for TypeScript' })
 vim.keymap.set('n', 'q', ':wa<CR>', { desc = 'Save' })
 --find and replace
 vim.keymap.set('n', '<leader>gf', ':GrugFar<CR>', { desc = '[G]rug[F]ar find and replace' })
+-- toggleterm
+local opts = { buffer = 0 }
+vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+
+vim.keymap.set('n', '<leader>tf', '<cmd>ToggleTerm direction=float<CR>', { desc = 'Toggle floating terminal' })
+vim.keymap.set('n', '<leader>tt', '<cmd>ToggleTerm direction=horizontal<CR>', { desc = 'Toggle terminal' })
+vim.keymap.set('n', '<leader>tv', '<cmd>ToggleTerm size=40 direction=vertical<CR>', { desc = 'Toggle vertical terminal' })
