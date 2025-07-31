@@ -29,8 +29,8 @@ return {
         local formatters = conform.list_formatters_for_buffer(bufnr)
         local is_rubocop = false
 
-        for _, formatter in ipairs(formatters) do
-          if formatter.name == 'rubocop' then
+        for _, name in ipairs(formatters) do
+          if name == 'rubocop' then
             is_rubocop = true
             break
           end
