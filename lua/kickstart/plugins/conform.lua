@@ -24,7 +24,7 @@ return {
           return nil
         else
           return {
-            timeout_ms = 500,
+            timeout_ms = 5000,
             lsp_format = 'fallback',
           }
         end
@@ -34,7 +34,7 @@ return {
         typescript = { 'prettier' },
         typescriptreact = { 'prettier' },
         astro = { 'prettier' },
-        ruby = { 'rubyfmt' },
+        ruby = { 'rubocop', '--auto-correct-all', '--only-fix' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         -- You can use 'stop_after_first' to run the first available formatter from the list
