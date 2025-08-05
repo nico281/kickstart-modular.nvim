@@ -47,6 +47,7 @@ return {
         typescriptreact = { 'prettier' },
         astro = { 'prettier' },
         ruby = { 'rubocop', '--auto-correct-all', '--only-fix' },
+        json = { 'prettier' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         -- You can use 'stop_after_first' to run the first available formatter from the list
