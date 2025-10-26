@@ -79,9 +79,9 @@ vim.o.confirm = true
 
 if vim.g.neovide then
   --vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h18'
-  vim.o.guifont = 'Maple Mono NF:h14'
+  vim.o.guifont = 'Maple Mono NF:h16'
   --vim.o.guifont = 'Recursive:h22'
-  vim.opt.linespace = 8
+  vim.opt.linespace = 16
   vim.g.neovide_refresh_rate = 120
 end
 
