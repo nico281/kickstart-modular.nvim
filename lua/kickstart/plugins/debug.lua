@@ -21,8 +21,6 @@ return {
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
-    -- Add your own debuggers here
-    'leoluz/nvim-dap-go',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -93,8 +91,7 @@ return {
       -- You'll need to check that you have the required things installed
       -- online, please don't ask me how to install them :)
       ensure_installed = {
-        -- Update this to ensure that you have the debuggers for the langs you want
-        'delve',
+        'js-debug-adapter',
       },
     }
 
@@ -136,13 +133,21 @@ return {
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
     dap.listeners.before.event_exited['dapui_config'] = dapui.close
 
-    -- Install golang specific config
-    require('dap-go').setup {
-      delve = {
-        -- On Windows delve must be run attached or it crashes.
-        -- See https://github.com/leoluz/nvim-dap-go/blob/main/README.md#configuring
-        detached = vim.fn.has 'win32' == 0,
-      },
-    }
+    -- JS/TS config
+    local js_debug_path = vim.fn.stdpath('data') .. '/mason/packages/js-debug-adapter/js-debug/src/dapDebugServer.js'
+    if vim.fn.filereadable(js_debug_path) == 1 then
+      dap.adapters['pwa-node'] = {
+        type = 'server',
+        host = 'localhost',
+        port = '${port}',
+        executable = {
+          command = 'node',
+          args = { js_debug_path, '${port}' },
+        },
+      }
+      require('dap.ext.vscode').load_launchjs(nil, {
+        ['pwa-node'] = { 'javascript', 'typescript' },
+      })
+    end
   end,
 }
