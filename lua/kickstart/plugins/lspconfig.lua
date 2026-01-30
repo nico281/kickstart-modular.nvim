@@ -242,6 +242,14 @@ return {
             },
           },
         },
+        ruby_lsp = {
+          cmd = { 'bundle', 'exec', 'ruby-lsp' },
+          init_options = {
+            enabledFeatures = {
+              diagnostics = false, -- use nvim-lint with bundled rubocop instead
+            },
+          },
+        },
       }
 
       -- Ensure the servers and tools above are installed
