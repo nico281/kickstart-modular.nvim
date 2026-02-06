@@ -1,8 +1,5 @@
 return {
-  filetypes = {
-    "javascript", "javascriptreact",
-    "typescript", "typescriptreact", "vue",
-  },
+  filetypes = { "vue" },
   settings = {
     vtsls = {
       tsserver = {
