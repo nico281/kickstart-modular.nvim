@@ -85,4 +85,18 @@ if vim.g.neovide then
   vim.g.neovide_refresh_rate = 120
 end
 
+-- Float windows (hover, diagnostics) con más contraste
+vim.api.nvim_create_autocmd('ColorScheme', {
+  callback = function()
+    vim.api.nvim_set_hl(0, 'NormalFloat', { bg = '#1a1b26', ctermbg = 0 })
+    vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#ffffff', bg = '#1a1b26', bold = true })
+  end,
+})
+
+-- Aplicar también al cargar y después de un delay
+vim.schedule(function()
+  vim.api.nvim_set_hl(0, 'NormalFloat', { bg = '#1a1b26', ctermbg = 0 })
+  vim.api.nvim_set_hl(0, 'FloatBorder', { fg = '#ffffff', bg = '#1a1b26', bold = true })
+end)
+
 -- vim: ts=2 sts=2 sw=2 et
