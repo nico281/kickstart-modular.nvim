@@ -31,25 +31,6 @@ return {
     },
     config = function()
       -- LSP Handlers con bordes - configurar ANTES de que cargue LSP
-      vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(
-        vim.lsp.handlers.hover,
-        {
-          border = 'double',
-          silent = true,
-          focusable = true,
-          max_width = 80,
-          max_height = 30,
-        }
-      )
-      vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(
-        vim.lsp.handlers.signature_help,
-        {
-          border = 'double',
-          silent = true,
-          focusable = true,
-        }
-      )
-
       -- Brief aside: **What is LSP?**
       --
       -- LSP is an initialism you've probably heard, but might not understand what it is.
@@ -120,6 +101,15 @@ return {
           -- Rename the variable under your cursor.
           --  Most Language Servers support renaming across files, etc.
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
+
+          -- Hover with styled float
+          map('K', function()
+            vim.lsp.buf.hover {
+              border = 'rounded',
+              max_width = 80,
+              max_height = 30,
+            }
+          end, 'Hover')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
