@@ -103,12 +103,12 @@ return {
           map('<leader>rn', vim.lsp.buf.rename, '[R]e[n]ame')
 
           -- Hover with styled float
-          map('K', function()
-            vim.lsp.buf.hover {
-              border = 'rounded',
-              --max_width = 120,
-            }
-          end, 'Hover documentation')
+          --map('K', function()
+          --vim.lsp.buf.hover {
+          --border = 'rounded',
+          --max_width = 120,
+          -- }
+          --end, 'Hover documentation')
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
