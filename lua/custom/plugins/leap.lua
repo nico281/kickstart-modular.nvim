@@ -1,11 +1,11 @@
 return {
-  'ggandor/leap.nvim',
+  'https://codeberg.org/andyg/leap.nvim.git',
   event = 'VeryLazy',
   config = function()
-    local leap = require('leap')
-    
+    local leap = require 'leap'
+
     -- Configure leap
-    leap.setup({
+    leap.setup {
       max_phase_one_targets = nil,
       highlight_unlabeled_phase_one_targets = false,
       max_highlighted_traversal_targets = 10,
@@ -24,7 +24,7 @@ return {
         multi_accept = '<enter>',
         multi_revert = '<backspace>',
       },
-    })
+    }
 
     -- Set up keymaps
     local function map(mode, lhs, rhs, opts)
@@ -36,7 +36,7 @@ return {
     -- Bidirectional search in the current window
     map({ 'n', 'x', 'o' }, 's', '<Plug>(leap-forward)', { desc = 'Leap forward' })
     map({ 'n', 'x', 'o' }, 'S', '<Plug>(leap-backward)', { desc = 'Leap backward' })
-    
+
     -- Search in other windows
     map({ 'n', 'x', 'o' }, 'gs', '<Plug>(leap-from-window)', { desc = 'Leap from window' })
 
@@ -71,23 +71,23 @@ return {
         })
       end,
     })
-    
+
     -- Trigger the autocmd for the current colorscheme
-    vim.cmd('doautocmd ColorScheme')
+    vim.cmd 'doautocmd ColorScheme'
 
     -- Optional: Add repeat functionality with dot (.)
     -- This allows you to repeat the last leap motion with '.'
     vim.api.nvim_create_autocmd('User', {
       pattern = 'LeapEnter',
       callback = function()
-        vim.cmd('echohl WarningMsg | echo "Leap mode" | echohl None')
+        vim.cmd 'echohl WarningMsg | echo "Leap mode" | echohl None'
       end,
     })
 
     vim.api.nvim_create_autocmd('User', {
       pattern = 'LeapLeave',
       callback = function()
-        vim.cmd('echo ""')
+        vim.cmd 'echo ""'
       end,
     })
 
@@ -111,5 +111,5 @@ return {
     --     })
     --   end
     -- }
-  }
+  },
 }
