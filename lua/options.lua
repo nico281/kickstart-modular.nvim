@@ -77,6 +77,17 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
+-- Fix PATH for WSL+Neovide (launched without login shell)
+do
+  local base_paths = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+  local nvm_bins = vim.fn.glob(vim.fn.expand '~/.nvm/versions/node/*/bin', false, true)
+  table.sort(nvm_bins)
+  if #nvm_bins > 0 then
+    base_paths = nvm_bins[#nvm_bins] .. ':' .. base_paths
+  end
+  vim.env.PATH = base_paths .. ':' .. (vim.env.PATH or '')
+end
+
 if vim.g.neovide then
   --vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h18'
   vim.o.guifont = 'Maple Mono NF:h16'
