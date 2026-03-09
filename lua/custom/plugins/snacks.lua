@@ -15,47 +15,5 @@ return {
   keys = {
     { '<leader>z', function() Snacks.zen() end, desc = 'Zen Mode' },
     { '<leader>d', function() Snacks.dashboard() end, desc = 'Dashboard' },
-    -- Search modal (LazyVim style)
-    {
-      '/',
-      function()
-        Snacks.input({
-          prompt = 'Search: ',
-          title = ' Search',
-          win = { style = { border = 'rounded' } },
-        }, function(text)
-          if text and text ~= '' then
-            vim.fn.setreg('/', text)
-            vim.fn.histadd('search', text)
-            vim.opt.hlsearch = true
-            -- Buscar la primera ocurrencia
-            vim.fn.search(text, 'W')
-          end
-        end)
-      end,
-      mode = 'n',
-      desc = 'Search',
-    },
-    -- Command modal (LazyVim style)
-    {
-      ':',
-      function()
-        Snacks.input({
-          prompt = 'Command: ',
-          win = {
-            style = { border = 'rounded' },
-            title = ' Command',
-            title_pos = 'center',
-          },
-        }, function(text)
-          if text and text ~= '' then
-            vim.fn.histadd('cmd', text)
-            vim.cmd(text)
-          end
-        end)
-      end,
-      mode = 'n',
-      desc = 'Command',
-    },
   },
 }
