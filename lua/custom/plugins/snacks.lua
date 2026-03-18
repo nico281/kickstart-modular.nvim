@@ -7,13 +7,11 @@ return {
     notifier = { enabled = true },
     quickfile = { enabled = true },
     words = { enabled = true },
-    dashboard = { enabled = true },
-    input = { enabled = true }, -- inputs modales
-    scroll = { enabled = true }, -- smooth scroll
+    input = { enabled = true },
+    scroll = { enabled = true },
     zen = { enabled = true },
   },
   keys = {
     { '<leader>z', function() Snacks.zen() end, desc = 'Zen Mode' },
-    { '<leader>d', function() Snacks.dashboard() end, desc = 'Dashboard' },
   },
 }
