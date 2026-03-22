@@ -8,6 +8,10 @@
 --  To update plugins you can run
 --    :Lazy update
 --
+
+-- Load Ruby version detection BEFORE lazy (must run before LSP)
+require 'custom.ruby-version'
+
 -- NOTE: Here is where you install your plugins.
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
