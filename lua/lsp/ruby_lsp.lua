@@ -1,7 +1,23 @@
+local function find_mise()
+  local candidates = {
+    vim.fn.expand '~' .. '/.local/bin/mise',
+    '/opt/homebrew/bin/mise',
+    '/usr/local/bin/mise',
+  }
+  for _, path in ipairs(candidates) do
+    if vim.fn.executable(path) == 1 then
+      return path
+    end
+  end
+  return nil
+end
+
+local mise_bin = find_mise()
+
 local function get_ruby_path()
-  -- Try mise first
-  if vim.fn.executable('mise') == 1 then
-    local mise_path = vim.fn.trim(vim.fn.system('mise exec ruby -- which ruby 2>/dev/null'))
+  -- Try mise first (use absolute path to avoid shell PATH issues)
+  if mise_bin then
+    local mise_path = vim.fn.trim(vim.fn.system(mise_bin .. ' which ruby 2>/dev/null'))
     if vim.fn.executable(mise_path) == 1 then
       return mise_path
     end

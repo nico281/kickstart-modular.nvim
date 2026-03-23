@@ -77,15 +77,39 @@ vim.o.scrolloff = 10
 -- See `:help 'confirm'`
 vim.o.confirm = true
 
--- Fix PATH for WSL+Neovide (launched without login shell)
+-- Ensure mise/nvm are first in PATH (needed for Neovide/WSL without login shell)
 do
-  local base_paths = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
-  local nvm_bins = vim.fn.glob(vim.fn.expand '~/.nvm/versions/node/*/bin', false, true)
+  local home = vim.fn.expand '~'
+  local current_path = vim.env.PATH or ''
+  local prepend = {}
+
+  -- mise bin (mise binary itself)
+  local mise_bin = home .. '/.local/bin'
+  if vim.fn.isdirectory(mise_bin) == 1 then
+    table.insert(prepend, mise_bin)
+  end
+
+  -- mise shims (ruby, node, etc)
+  local mise_shims = home .. '/.local/share/mise/shims'
+  if vim.fn.isdirectory(mise_shims) == 1 then
+    table.insert(prepend, mise_shims)
+  end
+
+  -- nvm
+  local nvm_bins = vim.fn.glob(home .. '/.nvm/versions/node/*/bin', false, true)
   table.sort(nvm_bins)
   if #nvm_bins > 0 then
-    base_paths = nvm_bins[#nvm_bins] .. ':' .. base_paths
+    table.insert(prepend, nvm_bins[#nvm_bins])
   end
-  vim.env.PATH = base_paths .. ':' .. (vim.env.PATH or '')
+
+  if #prepend > 0 then
+    -- Remove these paths from current PATH to avoid duplicates, then prepend
+    for _, p in ipairs(prepend) do
+      current_path = current_path:gsub(p .. ':', '')
+      current_path = current_path:gsub(':' .. p, '')
+    end
+    vim.env.PATH = table.concat(prepend, ':') .. ':' .. current_path
+  end
 end
 
 if vim.g.neovide then
