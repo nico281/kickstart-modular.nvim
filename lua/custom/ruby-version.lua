@@ -85,21 +85,14 @@ local function update_path_for_ruby()
         end
       end
 
-      vim.notify(
-        string.format('Ruby (%s): %s', manager, vim.fn.trim(vim.fn.system(ruby_path .. ' --version'))),
-        vim.log.levels.INFO,
-        { title = 'Ruby Version' }
-      )
     else
-      -- Still show which ruby we're using
-      local version = vim.fn.trim(vim.fn.system(ruby_path .. ' --version'))
-      vim.notify(string.format('Ruby (%s): %s', manager, version), vim.log.levels.DEBUG, { title = 'Ruby Version' })
+      local _ = manager
     end
 
     return ruby_path
   end
 
-  vim.notify('No Ruby found', vim.log.levels.WARN, { title = 'Ruby Version' })
+  -- No Ruby found
   return nil
 end
 

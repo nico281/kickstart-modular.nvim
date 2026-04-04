@@ -14,45 +14,41 @@ end
 
 local mise_bin = find_mise()
 
-local function get_ruby_path()
-  -- Try mise first (use absolute path to avoid shell PATH issues)
+--- Resolve the full path to a Ruby gem executable using version managers.
+--- Uses `mise which` / `rbenv which` / `asdf which` to avoid picking up
+--- binary shims that `ruby -S` cannot execute.
+local function resolve_gem_exe(name)
   if mise_bin then
-    local mise_path = vim.fn.trim(vim.fn.system(mise_bin .. ' which ruby 2>/dev/null'))
-    if vim.fn.executable(mise_path) == 1 then
-      return mise_path
+    local p = vim.fn.trim(vim.fn.system(mise_bin .. ' which ' .. name .. ' 2>/dev/null'))
+    if vim.fn.executable(p) == 1 then
+      return p
     end
   end
 
-  -- Try rbenv
   if vim.fn.executable('rbenv') == 1 then
-    local rbenv_path = vim.fn.trim(vim.fn.system('rbenv which ruby 2>/dev/null'))
-    if vim.fn.executable(rbenv_path) == 1 then
-      return rbenv_path
+    local p = vim.fn.trim(vim.fn.system('rbenv which ' .. name .. ' 2>/dev/null'))
+    if vim.fn.executable(p) == 1 then
+      return p
     end
   end
 
-  -- Try asdf
   if vim.fn.executable('asdf') == 1 then
-    local asdf_path = vim.fn.trim(vim.fn.system('asdf which ruby 2>/dev/null'))
-    if vim.fn.executable(asdf_path) == 1 then
-      return asdf_path
+    local p = vim.fn.trim(vim.fn.system('asdf which ' .. name .. ' 2>/dev/null'))
+    if vim.fn.executable(p) == 1 then
+      return p
     end
-  end
-
-  -- Fallback to system ruby
-  local system_ruby = vim.fn.trim(vim.fn.system('which ruby 2>/dev/null'))
-  if vim.fn.executable(system_ruby) == 1 then
-    return system_ruby
   end
 
   return nil
 end
 
-local ruby_path = get_ruby_path()
+-- Resolve ruby-lsp directly so we skip mise's binary shims
+-- (ruby -S finds the shim and tries to load it as Ruby code, which fails).
+local ruby_lsp_path = resolve_gem_exe('ruby-lsp')
 
-if ruby_path then
+if ruby_lsp_path then
   return {
-    cmd = { ruby_path, '-S', 'bundle', 'exec', 'ruby-lsp' },
+    cmd = { ruby_lsp_path },
     init_options = {
       enabledFeatures = {
         diagnostics = false, -- use nvim-lint with bundled rubocop instead
@@ -60,9 +56,8 @@ if ruby_path then
     },
   }
 else
-  -- Fallback to bundle exec
   return {
-    cmd = { 'bundle', 'exec', 'ruby-lsp' },
+    cmd = { 'ruby-lsp' },
     init_options = {
       enabledFeatures = {
         diagnostics = false,
