@@ -102,6 +102,12 @@ do
     table.insert(prepend, nvm_bins[#nvm_bins])
   end
 
+  -- Windows scoop shims (rg, fd, etc. for Neovide)
+  local scoop_shims = '/mnt/c/Users/nico2/scoop/shims'
+  if vim.fn.isdirectory(scoop_shims) == 1 then
+    table.insert(prepend, scoop_shims)
+  end
+
   if #prepend > 0 then
     -- Remove these paths from current PATH to avoid duplicates, then prepend
     for _, p in ipairs(prepend) do
