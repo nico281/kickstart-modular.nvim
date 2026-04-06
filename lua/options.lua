@@ -102,10 +102,10 @@ do
     table.insert(prepend, nvm_bins[#nvm_bins])
   end
 
-  -- Windows scoop shims (rg, fd, etc. for Neovide)
-  local scoop_shims = '/mnt/c/Users/nico2/scoop/shims'
-  if vim.fn.isdirectory(scoop_shims) == 1 then
-    table.insert(prepend, scoop_shims)
+  -- linuxbrew (rg, fd, etc. for Neovide/WSL without login shell)
+  local linuxbrew_bin = '/home/linuxbrew/.linuxbrew/bin'
+  if vim.fn.isdirectory(linuxbrew_bin) == 1 then
+    table.insert(prepend, linuxbrew_bin)
   end
 
   if #prepend > 0 then
