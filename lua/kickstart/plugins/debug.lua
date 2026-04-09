@@ -21,6 +21,8 @@ return {
     'mason-org/mason.nvim',
     'jay-babu/mason-nvim-dap.nvim',
 
+    -- Ruby/Rails debug adapter
+    'suketa/nvim-dap-ruby',
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
@@ -128,6 +130,20 @@ return {
     --   local hl = (type == 'Stopped') and 'DapStop' or 'DapBreak'
     --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     -- end
+
+    -- Ruby/Rails DAP setup
+    require('dap-ruby').setup()
+
+    -- Override Ruby configs with longer waiting time for Rails boot
+    local base = { type = 'ruby', request = 'attach', options = { source_filetype = 'ruby' }, error_on_failure = true, localfs = true }
+    dap.configurations.ruby = {
+      vim.tbl_extend('force', base, { name = 'run rails', command = 'bundle', args = { 'exec', 'rails', 's' }, random_port = true, waiting = 5000 }),
+      vim.tbl_extend('force', base, { name = 'debug current file', command = 'rdbg', current_file = true, random_port = true, waiting = 1000 }),
+      vim.tbl_extend('force', base, { name = 'run rspec current file', command = 'bundle', args = { 'exec', 'rspec' }, current_file = true, random_port = true, waiting = 1000 }),
+      vim.tbl_extend('force', base, { name = 'run rspec current_line', command = 'bundle', args = { 'exec', 'rspec' }, current_line = true, random_port = true, waiting = 1000 }),
+      vim.tbl_extend('force', base, { name = 'bin/dev', command = 'bin/dev', random_port = true, waiting = 5000 }),
+      vim.tbl_extend('force', base, { name = 'attach existing (port 38698)', port = 38698, waiting = 0 }),
+    }
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
