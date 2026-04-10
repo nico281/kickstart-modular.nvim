@@ -4,6 +4,24 @@
 
 local path_sep = vim.fn.has('win32') == 1 and ';' or ':'
 
+local function prepend_path(dir)
+  if not dir or dir == '' then
+    return
+  end
+
+  local current_path = vim.env.PATH or ''
+  local parts = vim.split(current_path, path_sep, { plain = true })
+  local next_parts = { dir }
+
+  for _, part in ipairs(parts) do
+    if part ~= '' and part ~= dir then
+      table.insert(next_parts, part)
+    end
+  end
+
+  vim.env.PATH = table.concat(next_parts, path_sep)
+end
+
 local function find_mise()
   local candidates = {
     vim.fn.expand '~' .. '/.local/bin/mise',
@@ -64,29 +82,18 @@ local function get_ruby_path()
 end
 
 local function update_path_for_ruby()
-  local ruby_path, ruby_prefix, manager = get_ruby_path()
+  local ruby_path, ruby_prefix = get_ruby_path()
 
   if ruby_path and ruby_path ~= '' and ruby_path ~= 'ruby' then
     -- Extract bin directory from ruby path
     local ruby_bin = vim.fn.fnamemodify(ruby_path, ':h')
 
-    -- Get current PATH
-    local current_path = vim.env.PATH or ''
+    -- Always move the project Ruby to the front, even if it already exists later in PATH.
+    prepend_path(ruby_bin)
 
-    -- Only update if not already in PATH
-    if not current_path:match(vim.pesc(ruby_bin)) then
-      vim.env.PATH = ruby_bin .. path_sep .. current_path
-
-      -- Add gem bin paths if available
-      if ruby_prefix and ruby_prefix ~= '' then
-        local gem_bin = ruby_prefix .. '/bin'
-        if not vim.env.PATH:match(vim.pesc(gem_bin)) then
-          vim.env.PATH = gem_bin .. path_sep .. vim.env.PATH
-        end
-      end
-
-    else
-      local _ = manager
+    -- Add gem bin paths if available.
+    if ruby_prefix and ruby_prefix ~= '' then
+      prepend_path(ruby_prefix .. '/bin')
     end
 
     return ruby_path
@@ -95,6 +102,14 @@ local function update_path_for_ruby()
   -- No Ruby found
   return nil
 end
+
+local function is_ruby_project()
+  return vim.fn.filereadable(vim.fn.getcwd() .. '/.ruby-version') == 1
+    or vim.fn.filereadable(vim.fn.getcwd() .. '/.mise.toml') == 1
+    or vim.fn.filereadable(vim.fn.getcwd() .. '/Gemfile') == 1
+end
+
+update_path_for_ruby()
 
 -- Create augroup
 local ruby_version_group = vim.api.nvim_create_augroup('ruby_version', { clear = true })
@@ -107,7 +122,7 @@ vim.api.nvim_create_autocmd({ 'BufEnter', 'DirChanged' }, {
     local filename = vim.fn.expand('%:t')
 
     -- Check if we're in a Ruby project or file
-    if filetype == 'ruby' or filename == 'Gemfile' or filename == 'Rakefile' or filename == '.ruby-version' or filename == '.mise.toml' then
+    if is_ruby_project() or filetype == 'ruby' or filename == 'Gemfile' or filename == 'Rakefile' or filename == '.ruby-version' or filename == '.mise.toml' then
       update_path_for_ruby()
     end
   end,

@@ -76,6 +76,35 @@ return {
       end,
       desc = 'Debug: See last session result.',
     },
+    {
+      '<leader>du',
+      function()
+        require('dapui').toggle()
+      end,
+      desc = 'Debug: Toggle UI',
+    },
+    {
+      '<leader>do',
+      function()
+        require('dapui').open()
+      end,
+      desc = 'Debug: Open UI',
+    },
+    {
+      '<leader>dc',
+      function()
+        require('dapui').close()
+      end,
+      desc = 'Debug: Close UI',
+    },
+    {
+      '<leader>dt',
+      function()
+        require('dap').terminate()
+        require('dapui').close()
+      end,
+      desc = 'Debug: Terminate and Close UI',
+    },
   },
   config = function()
     local dap = require 'dap'
@@ -131,19 +160,42 @@ return {
     --   vim.fn.sign_define(tp, { text = icon, texthl = hl, numhl = hl })
     -- end
 
-    -- Ruby/Rails DAP setup
+    -- Ruby/Rails DAP setup. nvim-dap-ruby registers the adapter as "ruby".
     require('dap-ruby').setup()
+    dap.adapters.rdbg = dap.adapters.ruby
 
-    -- Override Ruby configs with longer waiting time for Rails boot
+    -- Override Ruby configs with longer waiting time for Rails boot.
     local base = { type = 'ruby', request = 'attach', options = { source_filetype = 'ruby' }, error_on_failure = true, localfs = true }
     dap.configurations.ruby = {
-      vim.tbl_extend('force', base, { name = 'run rails', command = 'bundle', args = { 'exec', 'rails', 's' }, random_port = true, waiting = 5000 }),
+      vim.tbl_extend('force', base, { name = 'run rails', command = 'rdbg', args = { '-n', '-c', 'bin/rails', 's' }, random_port = true, waiting = 5000 }),
       vim.tbl_extend('force', base, { name = 'debug current file', command = 'rdbg', current_file = true, random_port = true, waiting = 1000 }),
       vim.tbl_extend('force', base, { name = 'run rspec current file', command = 'bundle', args = { 'exec', 'rspec' }, current_file = true, random_port = true, waiting = 1000 }),
       vim.tbl_extend('force', base, { name = 'run rspec current_line', command = 'bundle', args = { 'exec', 'rspec' }, current_line = true, random_port = true, waiting = 1000 }),
       vim.tbl_extend('force', base, { name = 'bin/dev', command = 'bin/dev', random_port = true, waiting = 5000 }),
       vim.tbl_extend('force', base, { name = 'attach existing (port 38698)', port = 38698, waiting = 0 }),
     }
+
+    local function normalize_ruby_configs()
+      for _, config in ipairs(dap.configurations.ruby or {}) do
+        if config.type == 'rdbg' then
+          config.options = config.options or { source_filetype = 'ruby' }
+          config.localfs = config.localfs == nil and true or config.localfs
+
+          if config.request == 'attach' then
+            config.port = config.port or 38698
+            config.host = config.host or '127.0.0.1'
+            config.waiting = config.waiting or 0
+          elseif config.request == 'launch' and config.script == '${file}' then
+            config.type = 'ruby'
+            config.request = 'attach'
+            config.command = 'rdbg'
+            config.current_file = true
+            config.random_port = true
+            config.waiting = config.waiting or 1000
+          end
+        end
+      end
+    end
 
     dap.listeners.after.event_initialized['dapui_config'] = dapui.open
     dap.listeners.before.event_terminated['dapui_config'] = dapui.close
@@ -163,7 +215,9 @@ return {
       }
       require('dap.ext.vscode').load_launchjs(nil, {
         ['pwa-node'] = { 'javascript', 'typescript' },
+        rdbg = { 'ruby' },
       })
+      normalize_ruby_configs()
     end
   end,
 }
