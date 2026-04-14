@@ -124,6 +124,10 @@ if vim.g.neovide then
   --vim.o.guifont = 'Recursive:h22'
   vim.opt.linespace = 16
   vim.g.neovide_refresh_rate = 120
+  vim.g.neovide_cursor_animation_length = 0.15 -- duration in seconds
+  vim.g.neovide_cursor_trail_size = 0.3        -- 0.0 = no trail, 1.0 = instant jump
+  vim.g.neovide_cursor_animate_in_insert_mode = true
+  vim.g.neovide_cursor_animate_command_line = true
 end
 
 -- vim: ts=2 sts=2 sw=2 et
