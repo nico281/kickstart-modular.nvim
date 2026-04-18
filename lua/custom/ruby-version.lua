@@ -1,84 +1,36 @@
--- Detect Ruby version from mise/rbenv/asdf and update PATH
+-- Detect Ruby version from mise and update PATH
 -- Works on macOS, Linux, and WSL
 -- This file is sourced directly, not a lazy.nvim plugin
 
-local path_sep = vim.fn.has('win32') == 1 and ';' or ':'
+local env = require 'custom.env'
 
-local function prepend_path(dir)
-  if not dir or dir == '' then
-    return
-  end
-
-  local current_path = vim.env.PATH or ''
-  local parts = vim.split(current_path, path_sep, { plain = true })
-  local next_parts = { dir }
-
-  for _, part in ipairs(parts) do
-    if part ~= '' and part ~= dir then
-      table.insert(next_parts, part)
-    end
-  end
-
-  vim.env.PATH = table.concat(next_parts, path_sep)
-end
-
-local function find_mise()
-  local candidates = {
-    vim.fn.expand '~' .. '/.local/bin/mise',
-    '/opt/homebrew/bin/mise',
-    '/usr/local/bin/mise',
-  }
-  for _, path in ipairs(candidates) do
-    if vim.fn.executable(path) == 1 then
-      return path
-    end
-  end
-  return nil
-end
-
-local mise_bin = find_mise()
+local mise_bin = env.find_mise()
 
 -- Check if mise is available
 local function has_mise()
   return mise_bin ~= nil
 end
 
-local function get_ruby_path()
-  -- Priority: mise > rbenv > asdf > system
+local function warn_missing_mise()
+  vim.notify_once('mise requerido para Ruby/Rails en Neovim', vim.log.levels.WARN, { title = 'Ruby' })
+end
 
-  -- Try mise (use absolute path to avoid shell PATH issues)
+local function get_ruby_path()
   if has_mise() then
-    local mise_path = vim.fn.trim(vim.fn.system(mise_bin .. ' which ruby 2>/dev/null'))
+    local mise_path = env.mise_which 'ruby'
     if vim.fn.executable(mise_path) == 1 then
-      local mise_prefix = vim.fn.trim(vim.fn.system(mise_bin .. ' where ruby 2>/dev/null'))
+      local mise_prefix = env.mise_where 'ruby'
       return mise_path, mise_prefix, 'mise'
     end
   end
 
-  -- Try rbenv
-  if vim.fn.executable('rbenv') == 1 then
-    local rbenv_path = vim.fn.trim(vim.fn.system('rbenv which ruby 2>/dev/null'))
-    if vim.fn.executable(rbenv_path) == 1 then
-      local rbenv_prefix = vim.fn.trim(vim.fn.system('rbenv prefix 2>/dev/null'))
-      return rbenv_path, rbenv_prefix, 'rbenv'
-    end
-  end
-
-  -- Try asdf
-  if vim.fn.executable('asdf') == 1 then
-    local asdf_path = vim.fn.trim(vim.fn.system('asdf which ruby 2>/dev/null'))
-    if vim.fn.executable(asdf_path) == 1 then
-      return asdf_path, nil, 'asdf'
-    end
-  end
-
-  -- Fallback to system ruby
-  local system_ruby = vim.fn.trim(vim.fn.system('which ruby 2>/dev/null'))
-  if vim.fn.executable(system_ruby) == 1 then
-    return system_ruby, nil, 'system'
-  end
-
   return nil, nil, 'none'
+end
+
+local function is_ruby_project()
+  return vim.fn.filereadable(vim.fn.getcwd() .. '/.ruby-version') == 1
+    or vim.fn.filereadable(vim.fn.getcwd() .. '/.mise.toml') == 1
+    or vim.fn.filereadable(vim.fn.getcwd() .. '/Gemfile') == 1
 end
 
 local function update_path_for_ruby()
@@ -89,24 +41,21 @@ local function update_path_for_ruby()
     local ruby_bin = vim.fn.fnamemodify(ruby_path, ':h')
 
     -- Always move the project Ruby to the front, even if it already exists later in PATH.
-    prepend_path(ruby_bin)
+    env.prepend_path(ruby_bin)
 
     -- Add gem bin paths if available.
     if ruby_prefix and ruby_prefix ~= '' then
-      prepend_path(ruby_prefix .. '/bin')
+      env.prepend_path(ruby_prefix .. '/bin')
     end
 
     return ruby_path
   end
 
-  -- No Ruby found
-  return nil
-end
+  if is_ruby_project() or vim.bo.filetype == 'ruby' then
+    warn_missing_mise()
+  end
 
-local function is_ruby_project()
-  return vim.fn.filereadable(vim.fn.getcwd() .. '/.ruby-version') == 1
-    or vim.fn.filereadable(vim.fn.getcwd() .. '/.mise.toml') == 1
-    or vim.fn.filereadable(vim.fn.getcwd() .. '/Gemfile') == 1
+  return nil
 end
 
 update_path_for_ruby()
@@ -145,14 +94,15 @@ end, { desc = 'Reload Ruby version and restart LSP' })
 vim.api.nvim_create_user_command('RubyInfo', function()
   local ruby_path, _, manager = get_ruby_path()
   if ruby_path and ruby_path ~= '' then
+    local bundle_path = env.mise_which 'bundle'
     local info = {
       'Manager: ' .. manager,
       'Path: ' .. ruby_path,
       'Version: ' .. vim.fn.trim(vim.fn.system(ruby_path .. ' --version')),
-      'Bundle: ' .. (vim.fn.executable('bundle') == 1 and vim.fn.trim(vim.fn.system('bundle --version')) or 'not found'),
+      'Bundle: ' .. (bundle_path and vim.fn.trim(vim.fn.system(bundle_path .. ' --version')) or 'not found via mise'),
     }
     vim.notify(table.concat(info, '\n'), vim.log.levels.INFO, { title = 'Ruby Info' })
   else
-    vim.notify('No Ruby detected', vim.log.levels.WARN, { title = 'Ruby Info' })
+    vim.notify('No Ruby via mise', vim.log.levels.WARN, { title = 'Ruby Info' })
   end
 end, { desc = 'Show current Ruby information' })

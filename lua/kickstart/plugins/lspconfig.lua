@@ -292,11 +292,13 @@ return {
         },
       }
 
-      -- Ruby LSP: configured via lua/lsp/ruby_lsp.lua (not via Mason),
-      -- using bundle exec to avoid conflicts between system Ruby and RVM.
+      -- Ruby LSP: only via mise-resolved ruby/ruby-lsp.
       -- Rubocop diagnostics are handled separately by nvim-lint.
-      vim.lsp.config('ruby_lsp', require('lsp.ruby_lsp'))
-      vim.lsp.enable('ruby_lsp')
+      local ruby_lsp = require 'lsp.ruby_lsp'
+      if ruby_lsp then
+        vim.lsp.config('ruby_lsp', ruby_lsp)
+        vim.lsp.enable('ruby_lsp')
+      end
     end,
   },
 }

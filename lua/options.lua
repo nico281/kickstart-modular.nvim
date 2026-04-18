@@ -79,24 +79,24 @@ vim.o.confirm = true
 
 -- Ensure mise/nvm are first in PATH (needed for Neovide/WSL without login shell)
 do
+  local env = require 'custom.env'
   local home = vim.fn.expand '~'
-  local current_path = vim.env.PATH or ''
   local prepend = {}
 
   -- mise bin (mise binary itself)
-  local mise_bin = home .. '/.local/bin'
+  local mise_bin = vim.fs.joinpath(home, '.local', 'bin')
   if vim.fn.isdirectory(mise_bin) == 1 then
     table.insert(prepend, mise_bin)
   end
 
   -- mise shims (ruby, node, etc)
-  local mise_shims = home .. '/.local/share/mise/shims'
+  local mise_shims = vim.fs.joinpath(home, '.local', 'share', 'mise', 'shims')
   if vim.fn.isdirectory(mise_shims) == 1 then
     table.insert(prepend, mise_shims)
   end
 
   -- nvm
-  local nvm_bins = vim.fn.glob(home .. '/.nvm/versions/node/*/bin', false, true)
+  local nvm_bins = vim.fn.glob(vim.fs.joinpath(home, '.nvm', 'versions', 'node', '*', 'bin'), false, true)
   table.sort(nvm_bins)
   if #nvm_bins > 0 then
     table.insert(prepend, nvm_bins[#nvm_bins])
@@ -108,19 +108,12 @@ do
     table.insert(prepend, linuxbrew_bin)
   end
 
-  if #prepend > 0 then
-    -- Remove these paths from current PATH to avoid duplicates, then prepend
-    for _, p in ipairs(prepend) do
-      current_path = current_path:gsub(p .. ':', '')
-      current_path = current_path:gsub(':' .. p, '')
-    end
-    vim.env.PATH = table.concat(prepend, ':') .. ':' .. current_path
-  end
+  env.prepend_path(prepend)
 end
 
 if vim.g.neovide then
   --vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h18'
-  vim.o.guifont = 'Maple Mono NF:h12'
+  vim.o.guifont = 'Maple Mono NF:h18'
   --vim.o.guifont = 'Recursive:h22'
   vim.opt.linespace = 16
   vim.g.neovide_refresh_rate = 120
