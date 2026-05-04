@@ -68,9 +68,8 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 
 local function saveAndOrganizeTypeScript()
   local filetype = vim.bo.filetype
-  -- Check if the filetype is 'typescript' or 'typescriptreact'
-  if filetype == 'typescript' or filetype == 'typescriptreact' or filetype == 'javascript' or filetype == 'javascriptreact' then
-    vim.cmd ':TSToolsOrganize'
+  if filetype == 'typescript' or filetype == 'typescriptreact' then
+    vim.cmd 'TSToolsOrganizeImports'
   end
 end
 

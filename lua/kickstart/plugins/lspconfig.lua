@@ -232,7 +232,10 @@ return {
         -- But for many setups, the LSP (`ts_ls`) will work just fine
         -- ts_ls = {},
 
-        stylua = {}, -- Used to format Lua code
+        -- Vue support is split between the Vue language server and a TS server
+        -- configured only for `.vue` buffers via `after/lsp/vtsls.lua`.
+        vtsls = {},
+        vue_ls = {},
 
         -- Special Lua Config, as recommended by neovim help docs
         lua_ls = {
@@ -276,10 +279,13 @@ return {
       --    :Mason
       --
       -- You can press `g?` for help in this menu.
-      local ensure_installed = vim.tbl_keys(servers or {})
-      vim.list_extend(ensure_installed, {
-        -- You can add other tools here that you want Mason to install
-      })
+      local ensure_installed = {
+        'lua-language-server',
+        'stylua', -- used by conform.nvim for Lua formatting
+        'typescript-language-server', -- provides tsserver for typescript-tools.nvim
+        'vtsls',
+        'vue-language-server',
+      }
 
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -297,7 +303,7 @@ return {
       -- Ruby LSP: only via mise-resolved ruby/ruby-lsp.
       -- Rubocop diagnostics are handled separately by nvim-lint.
       local ruby_lsp = require 'lsp.ruby_lsp'
-      if ruby_lsp then
+      if type(ruby_lsp) == 'table' then
         setup_server('ruby_lsp', ruby_lsp)
       end
     end,

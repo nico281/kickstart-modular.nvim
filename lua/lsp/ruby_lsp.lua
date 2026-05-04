@@ -18,5 +18,5 @@ if ruby_lsp_path then
   }
 else
   vim.notify_once('ruby_lsp desactivado: mise no resolvio ruby-lsp', vim.log.levels.WARN, { title = 'Ruby LSP' })
-  return nil
+  return false
 end
