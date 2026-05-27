@@ -28,12 +28,66 @@ return {
   },
   keys = {
     -- Basic debugging keymaps, feel free to change to your liking!
-    { '<F5>', function() require('dap').continue() end, desc = 'Debug: Start/Continue' },
-    { '<F1>', function() require('dap').step_into() end, desc = 'Debug: Step Into' },
-    { '<F2>', function() require('dap').step_over() end, desc = 'Debug: Step Over' },
-    { '<F3>', function() require('dap').step_out() end, desc = 'Debug: Step Out' },
-    { '<leader>b', function() require('dap').toggle_breakpoint() end, desc = 'Debug: Toggle Breakpoint' },
-    { '<leader>B', function() require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ') end, desc = 'Debug: Set Breakpoint' },
+    {
+      '<F5>',
+      function()
+        local dap = require('dap')
+
+        if dap.session() == nil and vim.tbl_contains({ 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' }, vim.bo.filetype) then
+          dap.run {
+            type = 'pwa-node',
+            request = 'launch',
+            name = 'Next: dev debug',
+            program = vim.fn.getcwd() .. '/node_modules/next/dist/bin/next',
+            args = { 'dev' },
+            cwd = vim.fn.getcwd(),
+            console = 'integratedTerminal',
+            sourceMaps = true,
+            autoAttachChildProcesses = true,
+            skipFiles = { '<node_internals>/**' },
+          }
+          return
+        end
+
+        dap.continue()
+      end,
+      desc = 'Debug: Start/Continue',
+    },
+    {
+      '<F1>',
+      function()
+        require('dap').step_into()
+      end,
+      desc = 'Debug: Step Into',
+    },
+    {
+      '<F2>',
+      function()
+        require('dap').step_over()
+      end,
+      desc = 'Debug: Step Over',
+    },
+    {
+      '<F3>',
+      function()
+        require('dap').step_out()
+      end,
+      desc = 'Debug: Step Out',
+    },
+    {
+      '<leader>b',
+      function()
+        require('dap').toggle_breakpoint()
+      end,
+      desc = 'Debug: Toggle Breakpoint',
+    },
+    {
+      '<leader>B',
+      function()
+        require('dap').set_breakpoint(vim.fn.input 'Breakpoint condition: ')
+      end,
+      desc = 'Debug: Set Breakpoint',
+    },
     -- Toggle to see last session result. Without this, you can't see session output in case of unhandled exception.
     {
       '<F7>',
@@ -70,6 +124,41 @@ return {
         require('dapui').close()
       end,
       desc = 'Debug: Terminate and Close UI',
+    },
+    {
+      '<leader>dn',
+      function()
+        require('dap').run {
+          type = 'pwa-node',
+          request = 'attach',
+          name = 'Next: attach',
+          address = '127.0.0.1',
+          port = 9229,
+          cwd = vim.fn.getcwd(),
+          sourceMaps = true,
+          autoAttachChildProcesses = true,
+          skipFiles = { '<node_internals>/**' },
+        }
+      end,
+      desc = 'Debug: Attach Next Node',
+    },
+    {
+      '<leader>dN',
+      function()
+        require('dap').run {
+          type = 'pwa-node',
+          request = 'launch',
+          name = 'Next: dev debug',
+          program = vim.fn.getcwd() .. '/node_modules/next/dist/bin/next',
+          args = { 'dev' },
+          cwd = vim.fn.getcwd(),
+          console = 'integratedTerminal',
+          sourceMaps = true,
+          autoAttachChildProcesses = true,
+          skipFiles = { '<node_internals>/**' },
+        }
+      end,
+      desc = 'Debug: Launch Next',
     },
   },
   config = function()
@@ -181,10 +270,38 @@ return {
           args = { js_debug_path, '${port}' },
         },
       }
-      require('dap.ext.vscode').load_launchjs(nil, {
-        ['pwa-node'] = { 'javascript', 'typescript' },
-        rdbg = { 'ruby' },
-      })
+      dap.adapters.node = dap.adapters['pwa-node']
+      local next_attach = {
+        type = 'pwa-node',
+        request = 'attach',
+        name = 'Next: attach',
+        address = '127.0.0.1',
+        port = 9229,
+        cwd = vim.fn.getcwd(),
+        sourceMaps = true,
+        autoAttachChildProcesses = true,
+        skipFiles = { '<node_internals>/**' },
+      }
+
+      local next_launch = {
+        type = 'pwa-node',
+        request = 'launch',
+        name = 'Next: launch dev',
+        program = vim.fn.getcwd() .. '/node_modules/next/dist/bin/next',
+        args = { 'dev' },
+        cwd = vim.fn.getcwd(),
+        console = 'integratedTerminal',
+        sourceMaps = true,
+        autoAttachChildProcesses = true,
+        skipFiles = { '<node_internals>/**' },
+      }
+
+      for _, language in ipairs { 'javascript', 'typescript', 'javascriptreact', 'typescriptreact' } do
+        dap.configurations[language] = dap.configurations[language] or {}
+        table.insert(dap.configurations[language], next_attach)
+        table.insert(dap.configurations[language], next_launch)
+      end
+
       normalize_ruby_configs()
     end
   end,
