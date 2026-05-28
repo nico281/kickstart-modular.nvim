@@ -112,11 +112,12 @@ end
 if vim.g.neovide then
   local uname = vim.uv.os_uname()
   local is_wsl = uname.release:lower():find('microsoft', 1, true) ~= nil
-  local font_size = (vim.fn.has 'win32' == 1 or is_wsl) and 12 or 18
+  local font_size = (vim.fn.has 'win32' == 1 or is_wsl) and 13 or 19
   --vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h18'
-  vim.o.guifont = ('Maple Mono NF:h%d'):format(font_size)
+  -- vim.o.guifont = ('Maple Mono NF:h%d'):format(font_size)
+  vim.o.guifont = ([[DankMono\ Nerd\ Font\ Mono:h%d]]):format(font_size)
   --vim.o.guifont = 'Recursive:h22'
-  vim.opt.linespace = 16
+  vim.opt.linespace = 8
   vim.g.neovide_refresh_rate = 120
   vim.g.neovide_cursor_animation_length = 0.15 -- duration in seconds
   vim.g.neovide_cursor_trail_size = 0.3        -- 0.0 = no trail, 1.0 = instant jump
