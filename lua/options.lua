@@ -111,18 +111,40 @@ end
 
 if vim.g.neovide then
   local uname = vim.uv.os_uname()
+  local is_macos = uname.sysname == 'Darwin'
   local is_wsl = uname.release:lower():find('microsoft', 1, true) ~= nil
   local font_size = (vim.fn.has 'win32' == 1 or is_wsl) and 13 or 19
+
   --vim.o.guifont = 'IosevkaTerm Nerd Font Mono:h18'
   -- vim.o.guifont = ('Maple Mono NF:h%d'):format(font_size)
   vim.o.guifont = ([[DankMono\ Nerd\ Font\ Mono:h%d]]):format(font_size)
   --vim.o.guifont = 'Recursive:h22'
   vim.opt.linespace = 8
+
   vim.g.neovide_refresh_rate = 120
+  vim.g.neovide_refresh_rate_idle = 5
+  vim.g.neovide_confirm_quit = true
+  vim.g.neovide_hide_mouse_when_typing = true
+
+  vim.g.neovide_scroll_animation_length = 0.12
   vim.g.neovide_cursor_animation_length = 0.15 -- duration in seconds
   vim.g.neovide_cursor_trail_size = 0.3        -- 0.0 = no trail, 1.0 = instant jump
   vim.g.neovide_cursor_animate_in_insert_mode = true
   vim.g.neovide_cursor_animate_command_line = true
+
+  if is_macos then
+    vim.g.neovide_input_use_logo = true
+    vim.g.neovide_input_macos_option_key_is_meta = 'only_left'
+  end
+
+  local function change_scale(delta)
+    vim.g.neovide_scale_factor = math.max(0.5, (vim.g.neovide_scale_factor or 1) + delta)
+  end
+
+  vim.keymap.set('n', '<D-=>', function() change_scale(0.1) end, { desc = 'Neovide zoom in' })
+  vim.keymap.set('n', '<D-->', function() change_scale(-0.1) end, { desc = 'Neovide zoom out' })
+  vim.keymap.set('n', '<D-0>', function() vim.g.neovide_scale_factor = 1 end, { desc = 'Neovide zoom reset' })
+  vim.keymap.set('n', '<D-CR>', function() vim.g.neovide_fullscreen = not vim.g.neovide_fullscreen end, { desc = 'Neovide fullscreen' })
 end
 
 -- vim: ts=2 sts=2 sw=2 et
