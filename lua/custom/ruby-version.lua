@@ -18,7 +18,7 @@ end
 local function get_ruby_path()
   if has_mise() then
     local mise_path = env.mise_which 'ruby'
-    if vim.fn.executable(mise_path) == 1 then
+    if mise_path and vim.fn.executable(mise_path) == 1 then
       local mise_prefix = env.mise_where 'ruby'
       return mise_path, mise_prefix, 'mise'
     end
